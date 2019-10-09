@@ -12,7 +12,7 @@
 #***************准备条件************
 #
 # 判断是否为root账号
-if [ ! "$USER" == 'root' ];then
+if [ ! "$USER" = 'root' ];then
 	echo "非特权root用户，没有权限"
 	exit 1
 fi
@@ -27,7 +27,7 @@ deluser () {
 for i in $user_num
 	do
 		userdel -rZ Luffy$i
-		if [ $?==0 ];then
+		if [ $? = 0 ];then
 			echo "删除用户Luffy$i成功"
 		else
 			echo "删除用户Luffy$i失败"

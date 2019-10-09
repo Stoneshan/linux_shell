@@ -16,7 +16,7 @@
 pw_txt=`mktemp pw.XXX`
 user_num=`seq -s ' ' -w 1 20`
 # 判断是否为root账号
-if [ ! "$USER" == 'root' ];then
+if [ ! "$USER" = 'root' ];then
 	echo "非特权root用户，没有权限"
 	exit 1
 fi
@@ -37,7 +37,7 @@ for i in $user_num
 	do
 		pw=`head -n $i $pw_txt | tail -1`
 		echo $pw | passwd --stdin Luffy$i &>/dev/null
-		if [ $?==0 ];then
+		if [ $? = 0 ];then
 			echo -e "Luffy$i\t\t$pw" >> user_add_result.txt
 		else
 			echo "Luffy$i created faile"
