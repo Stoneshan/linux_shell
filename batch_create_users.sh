@@ -28,9 +28,9 @@ add_user () {
 	echo -e "account\t\tpassword" >user_add_result.txt
 # 创建用户
 for i in $user_num
-	do
-		useradd Luffy$i
-done
+       do
+                useradd Luffy$i
+       done
 #生产随机密码到文本
 cat /dev/urandom | strings -6 | egrep "^[a-zA-Z0-9]{6}$" head -n 20 >$pw_txt
 for i in $user_num
