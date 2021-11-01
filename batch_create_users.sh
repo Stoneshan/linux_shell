@@ -8,6 +8,7 @@
 #Description：         The is script used for creating users batchly
 #                      10 users with 8 random cipher
 #Copyright (C)：      2019 All rights reserved
+#批量创建用户
 #********************************************************************
 #
 #*************设置变量*************
