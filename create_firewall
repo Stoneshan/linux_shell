@@ -1,0 +1,42 @@
+#!/bin/bash
+#-------------------------------------------------------------
+#清空表  
+#默认filter表
+iptables -F
+iptables -X
+iptables -Z
+iptables  -t nat -F
+iptables  -t nat -X
+iptables  -t nat -Z
+iptables  -t mangle -F
+iptables  -t mangle -X
+iptables  -t mangle -Z
+iptables  -t raw -F
+iptables  -t raw -X
+iptables  -t raw -Z
+iptables  -t security -F
+iptables  -t security -X
+iptables  -t security -Z
+#-------------------------------------------------------------
+
+#-------------------------------------------------------------
+#设置默认动作
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT ACCEPT
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -m state --state INVALI -j DROP
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A INPUT -p icmp -j ACCEPT
+#开放web服务
+iptables -A INPUT -p tcp -m multiport --dports 80,443 -j ACCEPT
+iptables -A INPUT -s 192.168.18.0/24 -j ACCEPT
+#-------------------------------------------------------------
+
+
+————————————————————————————————————————————————————————————————
+附加信息：
+#保存规则  
+iptables-save > /etc/iptables/iptables.rules
+#修改配置后重载规则
+iptables-restore < /etc/iptables/iptables.rules
