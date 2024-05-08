@@ -1,0 +1,62 @@
+#!/bin/bash
+
+#作为网关使用时需要打开路由转发功能
+echo "1" > /pro/sys/net/ipv4/ip_forward
+#-------------------------------------------------------------
+#需要永久生效的话吗，通过如下命令
+#修改sysctl.conf：net.ipv4.ip_forward = 1，执行sysctl -p永久生效
+#-------------------------------------------------------------
+
+#-------------------------------------------------------------
+#清空表  
+#默认filter表
+iptables -F
+iptables -X
+iptables -Z
+iptables  -t nat -F
+iptables  -t nat -X
+iptables  -t nat -Z
+iptables  -t mangle -F
+iptables  -t mangle -X
+iptables  -t mangle -Z
+#-------------------------------------------------------------
+
+#-------------------------------------------------------------
+#设定规则
+#适用于出口IP固定，1.1.1.1属于外网口eth1,eth0连接内网网段192.168.18.0/24
+iptables -t nat -A POSTROUTING -s 192.168.0.0/16 -j SNAT --to-source 1.1.1.1
+#如果使用拨号方式，需要使用MASQUERADE
+#iptables -t nat -A POSTROUTING -s 192.168.0.0/16 -o ppp0 -j MASQUERADE
+#-------------------------------------------------------------
+
+#-------------------------------------------------------------
+#设置默认动作
+iptables -P INPUT DROP
+iptables -P FORWARD DROP
+iptables -P OUTPUT ACCEPT
+iptables -A INPUT -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A INPUT -m state --state INVALI -j DROP
+iptables -A INPUT -s 192.168.0.0/16 -j ACCEPT
+iptables -A INPUT -i lo -j ACCEPT
+iptables -A FORWARD -i eth1 -o eth0 -m state --state ESTABLISHED,RELATED -j ACCEPT
+iptables -A FORWARD -i eth1 -o eth0 -m state --state INVALI -j DROP
+iptables -A FORWARD -s 192.168.18.0/24 -j ACCEPT
+#-------------------------------------------------------------
+
+#后续开启路由的DHCP服务
+#dhcpd.conf配置如下
+ddns-update-sytle none;
+option domain-name-servers 202.101.172.46,202.101.172.47;
+default-lease-time 864000;
+max-lease-time 864000;
+authoritative;
+log-facility local7;
+subnet 192.168.18.0 netmask 255.255.255.0 {
+  range 192.168.18.10 192.168.18.254;
+  option routers 192.168.18.1;
+}
+
+
+
+
+
